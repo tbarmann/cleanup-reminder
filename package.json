@@ -1,0 +1,16 @@
+{
+  "name": "cleanup-reminder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ascii-table": "0.0.9",
+    "date-fns": "^1.29.0",
+    "tabletop": "github:jsoma/tabletop"
+  }
+}
