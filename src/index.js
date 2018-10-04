@@ -8,43 +8,34 @@ const AsciiTable = require('ascii-table');
 const token = require('../.config').SLACK_API_TOKEN;
 const googleSpreadsheetKey = require('../.config').GOOGLE_SPREADSHEET_KEY;
 const axios = require('axios');
-const RtmClient = require('@slack/client').RtmClient;
-const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
-const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+const {RTMClient} = require('@slack/client');
 
-
-let botId;  // gets populated when authenticated
-let botName; // gets populated when authenticated
 const botDMChannel = 'DCW1MEP9Q';
 let users = []; // gets populated whenever a message to the bot is received
 
-const rtm = new RtmClient(token, {
-  logLevel: 'error',
-  dataStore: false
-});
+const rtm = new RTMClient(token);
 
 rtm.start();
 
-rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
-  botId = rtmStartData.self.id; 
-  botName = rtmStartData.self.name;
-  console.log(`Logged in as ${rtmStartData.self.name} of team ${rtmStartData.team.name}, but not yet connected to a channel`);
-});
-
-rtm.on(RTM_EVENTS.MESSAGE, (message) => {
-  const botDisplayName = `<@${botId}>`;
+rtm.on('message', (message) => {
+  const botDisplayName = getBotDisplayName();
   if (message.subtype !== 'message_deleted' && isMessageToBot(message)) {
-    console.log(message);
     fetchUserLookupTable()
       .then(() => {
-        const {command, userId} = parseMessage(message.text.replace(botDisplayName, ''), message.user);
+        // Remove bot's name from the message
+        const cleanedMessage = message.text.replace(botDisplayName, '');
+        const {command, userId} = parseMessage(cleanedMessage, message.user);
         process(command, message.channel, userId);
       });
   }
 });
 
+const getBotDisplayName = () => {
+  return `<@${rtm.activeUserId}>`;
+};
+
 const isMessageToBot = (message) => {
-  const botDisplayName = `<@${botId}>`;
+  const botDisplayName = getBotDisplayName();
   return message.text.startsWith(botDisplayName) || message.channel === botDMChannel;
 }
 
@@ -64,7 +55,7 @@ const fetchUserLookupTable = () => {
 };
 
 const getDisplayNameById = (id)  => {
-  console.log('id: ', id);
+  // users is global array of slack users
   const userRecord = users.find((record) => record.id === id);
   return userRecord ? userRecord.display_name : null;
 }

@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/client": "3.6.0",
+    "@slack/client": "^4.8.0",
     "ascii-table": "0.0.9",
     "axios": "^0.18.0",
     "date-fns": "^1.29.0",
