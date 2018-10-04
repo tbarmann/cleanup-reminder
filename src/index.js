@@ -5,7 +5,6 @@ const startOfWeek = require('date-fns/start_of_week');
 const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const AsciiTable = require('ascii-table');
-const SlackBot = require('slackbots');
 const token = require('../.config').SLACK_API_TOKEN;
 const googleSpreadsheetKey = require('../.config').GOOGLE_SPREADSHEET_KEY;
 const axios = require('axios');
