@@ -1,4 +1,4 @@
-const Tabletop = require('tabletop');
+const Tabletop = require('../vendor/tabletop');
 const isThisWeek = require('date-fns/is_this_week');
 const addWeeks = require('date-fns/add_weeks');
 const startOfWeek = require('date-fns/start_of_week');

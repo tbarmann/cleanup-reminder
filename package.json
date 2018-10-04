@@ -13,6 +13,6 @@
     "ascii-table": "0.0.9",
     "axios": "^0.18.0",
     "date-fns": "^1.29.0",
-    "tabletop": "github:jsoma/tabletop"
+    "request": "^2.88.0"
   }
 }
