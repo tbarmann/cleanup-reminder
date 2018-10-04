@@ -1,0 +1,4 @@
+module.exports = {
+  "SLACK_API_TOKEN": "your-slack-api-token-here", // this is the Slack "Bot User OAuth Access Token"
+  "GOOGLE_SPREADSHEET_KEY": "your google spreadsheet key here"
+}
