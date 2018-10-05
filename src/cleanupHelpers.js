@@ -4,7 +4,7 @@ const startOfWeek = require('date-fns/start_of_week');
 const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const Tabletop = require('../vendor/tabletop');
-const key = require('../.config').GOOGLE_SPREADSHEET_KEY;
+const key = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
 const {formatAsTable, formatAsCode, getBotDisplayName} = require('./slackHelpers');
 
 const commands = [

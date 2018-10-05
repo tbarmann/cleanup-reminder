@@ -1,4 +1,4 @@
-const token = require('../.config').SLACK_API_TOKEN;
+const token = process.env.SLACK_API_TOKEN || require('../.config').SLACK_API_TOKEN;
 const {RTMClient} = require('@slack/client');
 const {
   commands,
