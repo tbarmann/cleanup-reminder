@@ -4,9 +4,10 @@ const startOfWeek = require('date-fns/start_of_week');
 const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const Tabletop = require('../vendor/tabletop');
-const key = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
+const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
 const {formatAsTable, formatAsCode, getBotDisplayName} = require('./slackHelpers');
 
+const cleanupScheduleTabName = 'cleanupSchedule';
 const commands = [
   {command: 'today', example: 'Who has lunch clean-up duty today?'},
   {command: 'this', example: 'Who has lunch clean-up duty this week?'},
@@ -16,15 +17,19 @@ const commands = [
   {command: 'help', example: 'This screen'},
 ];
 
-const getCleanupSchedule = () => new Promise((resolve, reject) => {
+const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promise((resolve, reject) => {
   const options = {
-    key,
-    callback: (response) => resolve(response.cleanupSchedule.elements),
+    key: spreadsheetkey,
+    callback: (response) => resolve(response[spreadsheetTab].elements),
     simpleSheet: false,
     debug: false
   };
   Tabletop.init(options);
 });
+
+const getCleanupSchedule = () => {
+  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupScheduleTabName);
+}
 
 const getCurrentCleaner = (schedule) => {
   return schedule.find((record) => isThisWeek(record.weekOf));
