@@ -8,6 +8,7 @@ const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('..
 const {formatAsTable, formatAsCode, getBotDisplayName} = require('./slackHelpers');
 
 const cleanupScheduleTabName = 'cleanupSchedule';
+const cleanupMessagesTabName = 'messages';
 const commands = [
   {command: 'today', example: 'Who has lunch clean-up duty today?'},
   {command: 'this', example: 'Who has lunch clean-up duty this week?'},
@@ -31,6 +32,10 @@ const getCleanupSchedule = () => {
   return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupScheduleTabName);
 }
 
+const getCleanupMessages = () => {
+  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
+}
+
 const getCurrentCleaner = (schedule) => {
   return schedule.find((record) => isThisWeek(record.weekOf));
 };
@@ -51,7 +56,6 @@ const getSchedule = (schedule) => {
   const today = new Date();
   return schedule.filter((record) => !isBefore(record.weekOf, today));
 };
-
 
 const getCommands = () => {
   return `Here is a list of commands I understand:\n${formatAsTable(commands)}`;
@@ -92,6 +96,7 @@ const getCommandFromMessage = (message) => {
 module.exports = {
   commands,
   getCleanupSchedule,
+  getCleanupMessages,
   getCurrentCleaner,
   getNextWeeksCleaner,
   getScheduleByUser,
