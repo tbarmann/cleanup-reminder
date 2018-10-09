@@ -67,6 +67,7 @@ const buildMessage = (command, schedule, slackName) => {
     return 'I can\'t find that user on Slack!';
   }
   let record;
+  const records = getScheduleByUser(schedule, slackName);
   switch (command) {
     case 'today':
     case 'this':
@@ -80,10 +81,9 @@ const buildMessage = (command, schedule, slackName) => {
         ? `The person with lunch duty next week is ${record.name}`
         : 'I couldn\'t find who has lunch duty next week.';
     case 'turn':
-      const records = getScheduleByUser(schedule, slackName);
       return records.length === 0
         ? `I can't find ${slackName} on the schedule!`
-        : `${slackName} is scheduled for clean-up duty for these weeks: \n` +  formatAsTable(getScheduleByUser(schedule, slackName), ['name', 'weekOf']);
+        : `${slackName} is scheduled for clean-up duty for these weeks: \n` + formatAsTable(records, ['name', 'weekOf']);
     case 'schedule':
       return schedule.length > 0
         ? 'Here is the entire clean up schedule: \n' + formatAsTable(getSchedule(schedule), ['name', 'weekOf'])
