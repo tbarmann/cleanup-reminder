@@ -66,7 +66,7 @@ const formatAsTable = (json, fieldsToInclude = []) => {
 const parseSlackDisplayName = (messageText) => {
   const userIdPattern = /@([^'\s>]+)/;
   const found = messageText.match(userIdPattern);
-  return found && found.length > 1 ? found[1] : null;
+  return found ? found[1] : null;
 };
 
 module.exports = {
