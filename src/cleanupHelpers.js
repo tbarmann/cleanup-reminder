@@ -1,11 +1,12 @@
+// eslint-disable-next-line global-require
+const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
 const isThisWeek = require('date-fns/is_this_week');
 const addWeeks = require('date-fns/add_weeks');
 const startOfWeek = require('date-fns/start_of_week');
 const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const Tabletop = require('../vendor/tabletop');
-const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
-const {formatAsTable, formatAsCode, getBotDisplayName} = require('./slackHelpers');
+const {formatAsTable} = require('./slackHelpers');
 
 const cleanupScheduleTabName = 'cleanupSchedule';
 const cleanupMessagesTabName = 'messages';
@@ -15,10 +16,10 @@ const commands = [
   {command: 'next', example: 'Who has lunch clean-up duty next week?'},
   {command: 'turn', example: 'When is my (or @dude\'s) turn for lunch clean-up duty?'},
   {command: 'schedule', example: 'Show the whole schedule'},
-  {command: 'help', example: 'This screen'},
+  {command: 'help', example: 'This screen'}
 ];
 
-const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promise((resolve, reject) => {
+const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promise((resolve) => {
   const options = {
     key: spreadsheetkey,
     callback: (response) => resolve(response[spreadsheetTab].elements),
@@ -30,11 +31,11 @@ const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promis
 
 const getCleanupSchedule = () => {
   return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupScheduleTabName);
-}
+};
 
 const getCleanupMessages = () => {
   return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
-}
+};
 
 const getCurrentCleaner = (schedule) => {
   return schedule.find((record) => isThisWeek(record.weekOf));
