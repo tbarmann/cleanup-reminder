@@ -7,6 +7,7 @@ const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const Tabletop = require('../vendor/tabletop');
 const {formatAsTable} = require('./slackHelpers');
+const DataCache = require('./DataCache');
 
 const cleanupScheduleTabName = 'cleanupSchedule';
 const cleanupMessagesTabName = 'messages';
@@ -29,12 +30,19 @@ const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promis
   Tabletop.init(options);
 });
 
-const getCleanupSchedule = () => {
+const scheduleCache = new DataCache(() => {
   return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupScheduleTabName);
+});
+const messageCache = new DataCache(() => {
+  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
+});
+
+const getCleanupSchedule = () => {
+  return scheduleCache.getData();
 };
 
 const getCleanupMessages = () => {
-  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
+  return messageCache.getData();
 };
 
 const getCurrentCleaner = (schedule) => {
