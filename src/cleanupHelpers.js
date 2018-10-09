@@ -20,9 +20,9 @@ const commands = [
   {command: 'help', example: 'This screen'}
 ];
 
-const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promise((resolve) => {
+const readFromGoogleSpreadsheet = (spreadsheetKey, spreadsheetTab) => new Promise((resolve) => {
   const options = {
-    key: spreadsheetkey,
+    key: spreadsheetKey,
     callback: (response) => resolve(response[spreadsheetTab].elements),
     simpleSheet: false,
     debug: false
