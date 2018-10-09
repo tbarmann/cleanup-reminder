@@ -36,7 +36,7 @@ const getDisplayNameById = (id, users) => {
 };
 
 const formatAsCode = (str) => {
-  return `\`\`\`${str}\`\`\``;
+  return '```' + str + '```';
 };
 
 const formatAsTable = (json, fieldsToInclude = []) => {
