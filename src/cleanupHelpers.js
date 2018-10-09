@@ -14,7 +14,7 @@ const commands = [
   {command: 'today', example: 'Who has lunch clean-up duty today?'},
   {command: 'this', example: 'Who has lunch clean-up duty this week?'},
   {command: 'next', example: 'Who has lunch clean-up duty next week?'},
-  {command: 'turn', example: 'When is my (or @dude\'s) turn for lunch clean-up duty?'},
+  {command: 'turn', example: 'When is my (or @SlackName\'s) turn for lunch clean-up duty?'},
   {command: 'schedule', example: 'Show the whole schedule'},
   {command: 'help', example: 'This screen'}
 ];
