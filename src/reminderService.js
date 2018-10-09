@@ -19,9 +19,9 @@ const SEND_SLACK_RESPONSE = true;
 
 const sendReminderTo = (recipient, messageText) => {
   web.chat.postMessage({channel: recipient, text: messageText, as_user: 'cleanupbot'})
-    .then((response) => {
+    .then(() => {
       if (SEND_SLACK_RESPONSE) {
-        web.chat.postMessage({channel: debugSlackUser, text: formatAsCode(JSON.stringify(response))});
+        web.chat.postMessage({channel: debugSlackUser, text: messageText});
       }
     })
     .catch((error) => {
