@@ -2,6 +2,7 @@
 const token = process.env.SLACK_API_TOKEN || require('../.config').SLACK_API_TOKEN;
 const AsciiTable = require('ascii-table');
 const axios = require('axios');
+const DataCache = require('./DataCache');
 
 const getBotDisplayName = (activeUserId) => {
   return `<@${activeUserId}>`;
@@ -13,7 +14,7 @@ const isMessageToBot = (message, activeUserId, botDMChannel) => {
 };
 
 // fetches a list of all the group's users from Slack API and returns a promise
-const getSlackUsers = () => {
+const fetchSlackUsers = () => {
   const url = `https://slack.com/api/users.list?token=${token}`;
   return axios.get(url)
     .then((response) => {
@@ -29,6 +30,9 @@ const getSlackUsers = () => {
       });
     });
 };
+
+const userCache = new DataCache(() => fetchSlackUsers());
+const getSlackUsers = () => userCache.getData();
 
 const getDisplayNameById = (id, users) => {
   const userRecord = users.find((record) => record.id === id);
