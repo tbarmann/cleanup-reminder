@@ -4,7 +4,7 @@ class DataCache {
   constructor(fetchFunction, minutesToLive = MINUTES_TO_LIVE) {
     this.millisecondsToLive = minutesToLive * 60 * 1000;
     this.fetchFunction = fetchFunction;
-    this.cache = {};
+    this.cache = null;
     this.getData = this.getData.bind(this);
     this.resetCache = this.resetCache.bind(this);
     this.isCacheExpired = this.isCacheExpired.bind(this);
