@@ -1,7 +1,7 @@
+// eslint-disable-next-line global-require
 const token = process.env.SLACK_API_TOKEN || require('../.config').SLACK_API_TOKEN;
 const {RTMClient} = require('@slack/client');
 const {
-  commands,
   getCleanupSchedule,
   buildMessage,
   getCommandFromMessage
@@ -16,18 +16,20 @@ const {
 } = require('./slackHelpers');
 
 
-const botDMChannel = 'DCW1MEP9Q';   // can't find a way to get bot's channel id dynamically
-let botUserId;                      // assigned after authenticated
+const botDMChannel = 'DCW1MEP9Q'; // can't find a way to get bot's channel id dynamically
+let botUserId; // assigned after authenticated
 const rtm = new RTMClient(token);
 
 rtm.start();
 
-rtm.on('authenticated', () => botUserId = rtm.activeUserId);
+rtm.on('authenticated', () => {
+  botUserId = rtm.activeUserId;
+});
 
 rtm.on('message', (message) => {
-  if (message.subtype !== 'message_deleted' &&
-      message.subtype !== 'message_changed' &&
-      isMessageToBot(message, botUserId, botDMChannel)) {
+  if (message.subtype !== 'message_deleted'
+      && message.subtype !== 'message_changed'
+      && isMessageToBot(message, botUserId, botDMChannel)) {
     // remove bot's name if present from the message text
     const botDisplayName = getBotDisplayName(botUserId);
     const cleanedMessage = {...message, text: message.text.replace(botDisplayName, '')};
@@ -50,9 +52,9 @@ const handleMessage = (message) => {
       rtm.sendMessage(response, message.channel);
     })
     .catch((error) => {
+      // eslint-disable-next-line no-console
       console.log(error);
       const response = 'Sorry. Something has gone terribly wrong.';
       rtm.sendMessage(response, message.channel);
     });
 };
-

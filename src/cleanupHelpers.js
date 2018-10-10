@@ -1,11 +1,13 @@
+// eslint-disable-next-line global-require
+const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
 const isThisWeek = require('date-fns/is_this_week');
 const addWeeks = require('date-fns/add_weeks');
 const startOfWeek = require('date-fns/start_of_week');
 const isSameDay = require('date-fns/is_same_day');
 const isBefore = require('date-fns/is_before');
 const Tabletop = require('../vendor/tabletop');
-const GOOGLE_SPREADSHEET_KEY = process.env.GOOGLE_SPREADSHEET_KEY || require('../.config').GOOGLE_SPREADSHEET_KEY;
-const {formatAsTable, formatAsCode, getBotDisplayName} = require('./slackHelpers');
+const {formatAsTable} = require('./slackHelpers');
+const DataCache = require('./DataCache');
 
 const cleanupScheduleTabName = 'cleanupSchedule';
 const cleanupMessagesTabName = 'messages';
@@ -13,14 +15,14 @@ const commands = [
   {command: 'today', example: 'Who has lunch clean-up duty today?'},
   {command: 'this', example: 'Who has lunch clean-up duty this week?'},
   {command: 'next', example: 'Who has lunch clean-up duty next week?'},
-  {command: 'turn', example: 'When is my (or @dude\'s) turn for lunch clean-up duty?'},
+  {command: 'turn', example: 'When is my (or @SlackName\'s) turn for lunch clean-up duty?'},
   {command: 'schedule', example: 'Show the whole schedule'},
-  {command: 'help', example: 'This screen'},
+  {command: 'help', example: 'This screen'}
 ];
 
-const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promise((resolve, reject) => {
+const readFromGoogleSpreadsheet = (spreadsheetKey, spreadsheetTab) => new Promise((resolve) => {
   const options = {
-    key: spreadsheetkey,
+    key: spreadsheetKey,
     callback: (response) => resolve(response[spreadsheetTab].elements),
     simpleSheet: false,
     debug: false
@@ -28,13 +30,20 @@ const readFromGoogleSpreadsheet = (spreadsheetkey, spreadsheetTab) => new Promis
   Tabletop.init(options);
 });
 
-const getCleanupSchedule = () => {
+const scheduleCache = new DataCache(() => {
   return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupScheduleTabName);
-}
+});
+const messageCache = new DataCache(() => {
+  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
+});
+
+const getCleanupSchedule = () => {
+  return scheduleCache.getData();
+};
 
 const getCleanupMessages = () => {
-  return readFromGoogleSpreadsheet(GOOGLE_SPREADSHEET_KEY, cleanupMessagesTabName);
-}
+  return messageCache.getData();
+};
 
 const getCurrentCleaner = (schedule) => {
   return schedule.find((record) => isThisWeek(record.weekOf));
@@ -66,21 +75,27 @@ const buildMessage = (command, schedule, slackName) => {
     return 'I can\'t find that user on Slack!';
   }
   let record;
+  const records = getScheduleByUser(schedule, slackName);
   switch (command) {
     case 'today':
     case 'this':
       record = getCurrentCleaner(schedule);
-      return `The person with lunch duty this week is ${record.name}`;
+      return record
+        ? `The person with lunch duty this week is ${record.name}`
+        : 'I couldn\'t find who has lunch duty this week.';
     case 'next':
       record = getNextWeeksCleaner(schedule);
-      return `The person with lunch duty next week is ${record.name}`;
+      return record
+        ? `The person with lunch duty next week is ${record.name}`
+        : 'I couldn\'t find who has lunch duty next week.';
     case 'turn':
-      const records = getScheduleByUser(schedule, slackName);
       return records.length === 0
         ? `I can't find ${slackName} on the schedule!`
-        : `${slackName} is scheduled for clean-up duty for these weeks: \n` +  formatAsTable(getScheduleByUser(schedule, slackName), ['name', 'weekOf']);
+        : `${slackName} is scheduled for clean-up duty for these weeks: \n` + formatAsTable(records, ['name', 'weekOf']);
     case 'schedule':
-      return 'Here is the entire clean up schedule: \n' + formatAsTable(getSchedule(schedule), ['name', 'weekOf']);
+      return schedule.length > 0
+        ? 'Here is the entire clean up schedule: \n' + formatAsTable(getSchedule(schedule), ['name', 'weekOf'])
+        : 'Sorry, I was not able to read the schedule.';
     case 'help':
       return getCommands();
     default:
