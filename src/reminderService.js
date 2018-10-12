@@ -22,7 +22,7 @@ const sendReminderTo = (recipient, messageText) => {
   web.chat.postMessage({channel: recipient, text: messageText, as_user: 'cleanupbot'})
     .then(() => {
       if (DEBUG) {
-        web.chat.postMessage({channel: debugSlackUser, text: messageText, as_user: 'cleanupbot'});
+        web.chat.postMessage({channel: debugSlackUser, text: `Sent to: ${recipient}\n${messageText}`, as_user: 'cleanupbot'});
       }
     })
     .catch((error) => {
