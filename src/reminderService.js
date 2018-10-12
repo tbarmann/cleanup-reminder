@@ -50,4 +50,9 @@ if (isTuesday() || isFriday()) {
         }
       }
     });
+} else {
+  if (SEND_SLACK_RESPONSE) {
+    const messageText = "Running reminderService.js. Not Tuesday or Friday. Nothing to do.";
+    web.chat.postMessage({channel: debugSlackUser, text: messageText, as_user: 'cleanupbot'});
+  }
 }
