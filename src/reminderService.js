@@ -13,6 +13,7 @@ const {
 } = require('./cleanupHelpers');
 
 const web = new WebClient(token);
+const today = new Date();
 
 const debugSlackUser = '@tim';
 const SEND_SLACK_RESPONSE = true;
@@ -31,7 +32,7 @@ const sendReminderTo = (recipient, messageText) => {
     });
 };
 
-if (isTuesday() || isFriday()) {
+if (isTuesday(today) || isFriday(today)) {
   Promise.all([
     getCleanupSchedule(),
     getCleanupMessages()
@@ -42,7 +43,7 @@ if (isTuesday() || isFriday()) {
         const {dayOfReminder, duties, nextWeekReminder} = messages[0];
         sendReminderTo(currentCleaner.slack, `${dayOfReminder}\n${duties}`);
 
-        if (isFriday()) {
+        if (isFriday(today)) {
           const nextWeeksCleaner = getNextWeeksCleaner(schedule);
           if (nextWeeksCleaner && nextWeekReminder) {
             sendReminderTo(nextWeeksCleaner.slack, nextWeekReminder);
