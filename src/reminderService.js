@@ -16,17 +16,17 @@ const web = new WebClient(token);
 const today = new Date();
 
 const debugSlackUser = '@tim';
-const SEND_SLACK_RESPONSE = true;
+const DEBUG = true;
 
 const sendReminderTo = (recipient, messageText) => {
   web.chat.postMessage({channel: recipient, text: messageText, as_user: 'cleanupbot'})
     .then(() => {
-      if (SEND_SLACK_RESPONSE) {
+      if (DEBUG) {
         web.chat.postMessage({channel: debugSlackUser, text: messageText});
       }
     })
     .catch((error) => {
-      if (SEND_SLACK_RESPONSE) {
+      if (DEBUG) {
         web.chat.postMessage({channel: debugSlackUser, text: formatAsCode(JSON.stringify(error))});
       }
     });
@@ -52,7 +52,7 @@ if (isTuesday(today) || isFriday(today)) {
       }
     });
 } else {
-  if (SEND_SLACK_RESPONSE) {
+  if (DEBUG) {
     const messageText = "Running reminderService.js. Not Tuesday or Friday. Nothing to do.";
     web.chat.postMessage({channel: debugSlackUser, text: messageText, as_user: 'cleanupbot'});
   }
