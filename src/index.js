@@ -29,6 +29,7 @@ rtm.on('authenticated', () => {
 rtm.on('message', (message) => {
   if (message.subtype !== 'message_deleted'
       && message.subtype !== 'message_changed'
+      && !message.bot_id
       && isMessageToBot(message, botUserId, botDMChannel)) {
     // remove bot's name if present from the message text
     const botDisplayName = getBotDisplayName(botUserId);
