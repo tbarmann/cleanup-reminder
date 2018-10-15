@@ -58,7 +58,7 @@ const getNextWeeksCleaner = (schedule) => {
 
 const getScheduleByUser = (schedule, user) => {
   const today = new Date();
-  return schedule.filter((record) => record.slack === user && !isBefore(record.weekOf, today));
+  return schedule.filter((record) => record.slack.toLowerCase() === user.toLowerCase() && !isBefore(record.weekOf, today));
 };
 
 const getSchedule = (schedule) => {
